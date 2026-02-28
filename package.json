@@ -1,0 +1,22 @@
+{
+  "name": "discord-multipurpose-bot",
+  "version": "1.0.0",
+  "description": "Single-file multipurpose Discord bot (moderation, welcome/goodbye, reaction roles, antispam, antilink, giveaway, tickets)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Hyde",
+  "license": "MIT"
+}
