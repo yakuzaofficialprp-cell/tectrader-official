@@ -64,7 +64,6 @@ const commands = [
         .addStringOption(o => o.setName('channel_id').setDescription('Channel ID').setRequired(true))
         .addStringOption(o => o.setName('message').setDescription('Message').setRequired(true)),
 
-    // ─── NEW ───────────────────────────────────────
     new SlashCommandBuilder()
         .setName('tos')
         .setDescription('Shows Terms of Service'),
@@ -73,13 +72,16 @@ const commands = [
         .setName('rules')
         .setDescription('Shows server rules'),
 
-    // ─── GIVEROLE COMMAND ADDED ─────────────────────
     new SlashCommandBuilder()
         .setName('giverole')
         .setDescription('Give role to X members')
         .addIntegerOption(o => o.setName('count').setDescription('Number of members').setRequired(true))
         .addRoleOption(o => o.setName('role').setDescription('Role to give').setRequired(true)),
-    // ───────────────────────────────────────────────
+
+    // 🔥 NEW LEGIT CHECK COMMAND
+    new SlashCommandBuilder()
+        .setName('legit')
+        .setDescription('Send Legit Check Embed'),
 
 ].map(cmd => cmd.toJSON());
 
@@ -100,6 +102,36 @@ client.once('ready', async () => {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
+
+// ─── LEGIT EMBED COMMAND ─────────────────────────────
+if (interaction.commandName === "legit") {
+
+    const channelId = interaction.options.getString("channel_id");
+    const channel = interaction.guild.channels.cache.get(channelId);
+
+    if (!channel)
+        return interaction.reply({ content: "Invalid Channel ID", ephemeral: true });
+
+    const embed = new EmbedBuilder()
+        .setColor("#8A2BE2")
+        .setAuthor({
+            name: "TEC TRADERS",
+            iconURL: "https://i.imgur.com/0y0y0y0.png"
+        })
+        .setTitle("LEGIT OR NOT ?")
+        .setDescription("✅ **For LEGIT**\n\n❌ **For NOT**")
+        .setThumbnail("https://i.imgur.com/0y0y0y0.png")
+        .setImage("https://i.imgur.com/0y0y0y0.png")
+        .setFooter({ text: "TEC TRADERS • SHOP OF SERVICES" })
+        .setTimestamp();
+
+    await channel.send({ embeds: [embed] });
+
+    await interaction.reply({
+        content: "✅ Legit embed sent successfully",
+        ephemeral: true
+    });
+}
     // ─── existing commands ───────────────────────────────────────
     if (interaction.commandName === 'ban') {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers))
@@ -120,13 +152,6 @@ client.on('interactionCreate', async interaction => {
         interaction.reply({ embeds: [embed] });
     }
 
-    if (interaction.commandName === 'kick') { /* ... same as before ... */ }
-    if (interaction.commandName === 'mute') { /* ... same as before ... */ }
-    if (interaction.commandName === 'warn') { /* ... same as before ... */ }
-    if (interaction.commandName === 'clear') { /* ... same as before ... */ }
-    if (interaction.commandName === 'msg') { /* ... same as before ... */ }
-
-    // ─── GIVEROLE COMMAND ──────────────────────────
     if (interaction.commandName === 'giverole') {
 
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageRoles))
@@ -158,8 +183,7 @@ client.on('interactionCreate', async interaction => {
         });
     }
 
-    // ─── NEW COMMANDS ─────────────────────────────
-if (interaction.commandName === 'tos') {
+   if (interaction.commandName === 'tos') {
     const tosEmbed = new EmbedBuilder()
         .setColor(0xFF5555)                    // red for strict terms
         .setTitle("📜 TERMS & SERVICES")
@@ -226,7 +250,6 @@ if (interaction.commandName === 'tos') {
 
     await interaction.reply({ embeds: [tosEmbed] });
 }
-
     if (interaction.commandName === 'rules') {
         const rulesEmbed = new EmbedBuilder()
             .setColor(0xED4245)
