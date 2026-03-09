@@ -72,6 +72,13 @@ const commands = [
     new SlashCommandBuilder()
         .setName('rules')
         .setDescription('Shows server rules'),
+
+    // ─── GIVEROLE COMMAND ADDED ─────────────────────
+    new SlashCommandBuilder()
+        .setName('giverole')
+        .setDescription('Give role to X members')
+        .addIntegerOption(o => o.setName('count').setDescription('Number of members').setRequired(true))
+        .addRoleOption(o => o.setName('role').setDescription('Role to give').setRequired(true)),
     // ───────────────────────────────────────────────
 
 ].map(cmd => cmd.toJSON());
@@ -119,7 +126,39 @@ client.on('interactionCreate', async interaction => {
     if (interaction.commandName === 'clear') { /* ... same as before ... */ }
     if (interaction.commandName === 'msg') { /* ... same as before ... */ }
 
-    // ─── NEW COMMANDS ─────────────────────────────────────────────
+    // ─── GIVEROLE COMMAND ──────────────────────────
+    if (interaction.commandName === 'giverole') {
+
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageRoles))
+            return interaction.reply({ content: "No permission", ephemeral: true });
+
+        const count = interaction.options.getInteger('count');
+        const role = interaction.options.getRole('role');
+
+        await interaction.reply({ content: `Giving role to ${count} members...`, ephemeral: true });
+
+        const members = await interaction.guild.members.fetch();
+        let given = 0;
+
+        for (const member of members.values()) {
+
+            if (given >= count) break;
+
+            if (!member.user.bot && !member.roles.cache.has(role.id)) {
+                try {
+                    await member.roles.add(role);
+                    given++;
+                } catch (e) {}
+            }
+        }
+
+        await interaction.followUp({
+            content: `Role ${role.name} given to ${given} members`,
+            ephemeral: true
+        });
+    }
+
+    // ─── NEW COMMANDS ─────────────────────────────
 if (interaction.commandName === 'tos') {
     const tosEmbed = new EmbedBuilder()
         .setColor(0xFF5555)                    // red for strict terms
@@ -190,24 +229,15 @@ if (interaction.commandName === 'tos') {
 
     if (interaction.commandName === 'rules') {
         const rulesEmbed = new EmbedBuilder()
-            .setColor(0xED4245)           // red-ish for rules
+            .setColor(0xED4245)
             .setTitle("📜 Server Rules")
             .setDescription(
-                "1. **Respect everyone** — no harassment, hate speech, slurs\n" +
-                "2. **No spam / flood** — including emojis, mentions, copypasta\n" +
-                "3. **No NSFW content** outside of the designated channel (if any)\n" +
-                "4. **No advertising** without staff permission\n" +
-                "5. **No sharing of Nitro/Boost scams, token grabbers, cheats**\n" +
-                "6. **No selfbotting, mass DM, raiding**\n" +
-                "7. **Use English** in public channels (or appropriate language channels)\n" +
-                "8. **Follow Discord ToS & Community Guidelines**\n" +
-                "9. **No evading punishments** (alt accounts, etc.)\n" +
-                "10. **Staff word is final** — argue in DMs, not in public"
+                "1. **Respect everyone**\n" +
+                "2. **No spam**\n" +
+                "3. **No NSFW**\n" +
+                "4. **No advertising**\n" +
+                "5. **Follow Discord ToS**"
             )
-            .addFields(
-                { name: "⚠️ Breaking rules", value: "→ Warning → Mute → Kick → Ban", inline: false }
-            )
-            .setFooter({ text: "We want everyone to enjoy their stay • Have fun!" })
             .setTimestamp();
 
         await interaction.reply({ embeds: [rulesEmbed] });
