@@ -120,8 +120,8 @@ if (interaction.commandName === "legit") {
         })
         .setTitle("LEGIT OR NOT ?")
         .setDescription("✅ **For LEGIT**\n\n❌ **For NOT**")
-        .setThumbnail("https://i.imgur.com/0y0y0y0.png")
-        .setImage("https://i.imgur.com/0y0y0y0.png")
+        .setThumbnail("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")
+        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1475668721010741248/tec_trader-removebg-preview_1.png?ex=69b01f57&is=69aecdd7&hm=f30307c268b24c2c5b79cfd9d2d874fd5f8b6e53e2acb1ccde1f45b1a72b9341&")
         .setFooter({ text: "TEC TRADERS • SHOP OF SERVICES" })
         .setTimestamp();
 
