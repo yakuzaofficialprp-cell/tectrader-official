@@ -245,27 +245,24 @@ client.on('guildMemberAdd', async member => {
     const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
     if (!channel) return;
 
-    // Total members count (including bots, agar sirf humans chahiye to filter kar sakte hain)
-    const totalMembers = member.guild.memberCount;
-
     const welcomeEmbed = new EmbedBuilder()
-        .setColor("#8B0000") // red for welcome vibe (ya #5865F2 Discord blue bhi kar sakte ho)
+        .setColor("#8B0000") // red for fresh welcome vibe (ya purple chahiye to 0x8B00FF kar dena)
         .setTitle("Welcome to Tec Trader")
         .setDescription(
-            `Welcome <@${member.id}> to **Tec Trader**!\n\n` +
-            `Make sure you have read the rules in <#1337263610321305650>\n` +
-            `<#1337266092812406844>`
-            `<#1403799364706767019>`
+            `Welcome <@${member.id}> to **Elite Services**!\n\n` +
+            `• Read the rules & TOS: <#1337263610321305650>\n` +
+            `• Need support? Create a ticket: <#1337266092812406844>\n` +
+            `• Leave your vouch / feedback here: <#1403799364706767019>`
         )
         .addFields(
-            { name: "Total Members", value: `${totalMembers}`, inline: true }
+            { name: "Total Members", value: `${member.guild.memberCount}`, inline: true }
         )
         .setThumbnail(member.user.displayAvatarURL({ forceStatic: true }))
         .setFooter({ text: "Tec Trader • Enjoy your stay!" })
         .setTimestamp();
 
     await channel.send({
-        content: `<@${member.id}>`, // Mention user for ping
+        content: `<@${member.id}>`,
         embeds: [welcomeEmbed]
     });
 });
@@ -276,7 +273,7 @@ client.on('guildMemberRemove', async member => {
     if (!channel) return;
 
     const goodbyeEmbed = new EmbedBuilder()
-        .setColor(0x4B0082)
+        .setColor("#8B0000")
         .setTitle("Tec Trader")
         .setDescription(
             `**${member.user.tag}** has left the shadows...\n\n` +
