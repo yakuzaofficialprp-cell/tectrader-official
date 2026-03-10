@@ -34,55 +34,52 @@ const commands = [
         .setDescription('Ban a user')
         .addUserOption(o => o.setName('user').setDescription('User').setRequired(true))
         .addStringOption(o => o.setName('reason').setDescription('Reason')),
-
     new SlashCommandBuilder()
         .setName('kick')
         .setDescription('Kick a user')
         .addUserOption(o => o.setName('user').setDescription('User').setRequired(true))
         .addStringOption(o => o.setName('reason').setDescription('Reason')),
-
     new SlashCommandBuilder()
         .setName('mute')
         .setDescription('Timeout a user')
         .addUserOption(o => o.setName('user').setDescription('User').setRequired(true))
         .addIntegerOption(o => o.setName('minutes').setDescription('Minutes').setRequired(true))
         .addStringOption(o => o.setName('reason').setDescription('Reason')),
-
     new SlashCommandBuilder()
         .setName('warn')
         .setDescription('Warn a user')
         .addUserOption(o => o.setName('user').setDescription('User').setRequired(true)),
-
     new SlashCommandBuilder()
         .setName('clear')
         .setDescription('Clear messages')
         .addIntegerOption(o => o.setName('amount').setDescription('Amount').setRequired(true)),
-
     new SlashCommandBuilder()
         .setName('msg')
         .setDescription('Send embed message to channel')
         .addStringOption(o => o.setName('channel_id').setDescription('Channel ID').setRequired(true))
         .addStringOption(o => o.setName('message').setDescription('Message').setRequired(true)),
-
     new SlashCommandBuilder()
         .setName('tos')
         .setDescription('Shows Terms of Service'),
-
     new SlashCommandBuilder()
         .setName('rules')
         .setDescription('Shows server rules'),
-
     new SlashCommandBuilder()
         .setName('giverole')
         .setDescription('Give role to X members')
         .addIntegerOption(o => o.setName('count').setDescription('Number of members').setRequired(true))
         .addRoleOption(o => o.setName('role').setDescription('Role to give').setRequired(true)),
-
-    // 🔥 NEW LEGIT CHECK COMMAND
+    // 🔥 UPDATED LEGIT CHECK COMMAND
     new SlashCommandBuilder()
         .setName('legit')
         .setDescription('Send Legit Check Embed'),
-
+    // 🔥 NEW GIVEAWAY COMMAND
+    new SlashCommandBuilder()
+        .setName('giveaway')
+        .setDescription('Start a simple giveaway')
+        .addStringOption(o => o.setName('prize').setDescription('Prize jo dena hai').setRequired(true))
+        .addIntegerOption(o => o.setName('winners').setDescription('Kitne winners').setRequired(true).setMinValue(1).setMaxValue(10))
+        .addIntegerOption(o => o.setName('duration').setDescription('Kitne minutes tak chalega').setRequired(true).setMinValue(1).setMaxValue(1440))
 ].map(cmd => cmd.toJSON());
 
 client.once('ready', async () => {
@@ -102,37 +99,112 @@ client.once('ready', async () => {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
+    // ─── UPDATED LEGIT EMBED COMMAND ─────────────────────────────
+    if (interaction.commandName === "legit") {
+        const embed = new EmbedBuilder()
+            .setColor("#00FF00")                    // green for legit vibe
+            .setTitle("Detail Service - Embed")
+            .setDescription(
+                "**Are we Legit?**\n\n" +
+                "✅ = Yes\n" +
+                "❌ = Without Proof = Ban"
+            )
+            .addFields(
+                {
+                    name: "Proof Upload Karo",
+                    value: "Pic ka **direct link** daal do (imgur/discord/etc)\nStore name bhi likh do\nBaki sab same rakhna",
+                    inline: false
+                }
+            )
+            .setFooter({ 
+                text: "Developed by @meko1st • 3/6/2026 12:28 AM" 
+            })
+            .setTimestamp(new Date('2026-03-06T12:28:00.000Z'));
 
-// ─── LEGIT EMBED COMMAND ─────────────────────────────
-if (interaction.commandName === "legit") {
+        await interaction.channel.send({ embeds: [embed] });
+        await interaction.reply({
+            content: "✅ Legit embed sent successfully",
+            ephemeral: true
+        });
+    }
 
-    const channelId = interaction.options.getString("channel_id");
-    const channel = interaction.guild.channels.cache.get(channelId);
+    // ─── NEW GIVEAWAY COMMAND ────────────────────────────────
+    if (interaction.commandName === "giveaway") {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+            return interaction.reply({ content: "You need Manage Messages permission to start giveaways!", ephemeral: true });
+        }
 
-    if (!channel)
-        return interaction.reply({ content: "Invalid Channel ID", ephemeral: true });
+        const prize = interaction.options.getString('prize');
+        const winnersCount = interaction.options.getInteger('winners');
+        const durationMinutes = interaction.options.getInteger('duration');
+        const endTime = Date.now() + durationMinutes * 60 * 1000;
 
-    const embed = new EmbedBuilder()
-        .setColor("#8A2BE2")
-        .setAuthor({
-            name: "TEC TRADERS",
-            iconURL: "https://i.imgur.com/0y0y0y0.png"
-        })
-        .setTitle("LEGIT OR NOT ?")
-        .setDescription("✅ **For LEGIT**\n\n❌ **For NOT**")
-        .setThumbnail("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")
-        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1475668721010741248/tec_trader-removebg-preview_1.png?ex=69b01f57&is=69aecdd7&hm=f30307c268b24c2c5b79cfd9d2d874fd5f8b6e53e2acb1ccde1f45b1a72b9341&")
-        .setFooter({ text: "TEC TRADERS • SHOP OF SERVICES" })
-        .setTimestamp();
+        const giveawayEmbed = new EmbedBuilder()
+            .setColor("#FFD700") // gold/yellow vibe
+            .setTitle("🎉 GIVEAWAY STARTED!")
+            .setDescription(
+                `**Prize:** ${prize}\n` +
+                `**Winners:** ${winnersCount}\n\n` +
+                "React with 🎉 to enter!\n" +
+                `Ends: <t:${Math.floor(endTime / 1000)}:R> (<t:${Math.floor(endTime / 1000)}:f>)`
+            )
+            .setFooter({ text: `Hosted by ${interaction.user.tag} • ID: ${interaction.id}` })
+            .setTimestamp();
 
-    await channel.send({ embeds: [embed] });
+        const msg = await interaction.channel.send({ embeds: [giveawayEmbed] });
+        await msg.react('🎉');
 
-    await interaction.reply({
-        content: "✅ Legit embed sent successfully",
-        ephemeral: true
-    });
-}
-    // ─── existing commands ───────────────────────────────────────
+        await interaction.reply({
+            content: `Giveaway started! Ends <t:${Math.floor(endTime / 1000)}:R>`,
+            ephemeral: true
+        });
+
+        // Giveaway end logic (simple setTimeout)
+        setTimeout(async () => {
+            try {
+                const fetchedMsg = await interaction.channel.messages.fetch(msg.id);
+                const reaction = fetchedMsg.reactions.cache.get('🎉');
+                if (!reaction) return;
+
+                const users = await reaction.users.fetch();
+                const entrants = users.filter(u => !u.bot).map(u => u.id);
+
+                if (entrants.length === 0) {
+                    const endEmbed = new EmbedBuilder()
+                        .setColor("#FF0000")
+                        .setTitle("Giveaway Ended")
+                        .setDescription("No one entered 😢")
+                        .setTimestamp();
+                    return fetchedMsg.edit({ embeds: [endEmbed] });
+                }
+
+                // Random winners
+                const shuffled = entrants.sort(() => 0.5 - Math.random());
+                const winners = shuffled.slice(0, winnersCount);
+
+                const winnersMention = winners.map(id => `<@${id}>`).join(", ");
+
+                const endEmbed = new EmbedBuilder()
+                    .setColor("#00FF00")
+                    .setTitle("🎉 Giveaway Ended!")
+                    .setDescription(
+                        `**Prize:** ${prize}\n` +
+                        `**Winners:** ${winnersMention}\n\n` +
+                        "Congratulations! Contact the host to claim your prize."
+                    )
+                    .setFooter({ text: `Total entries: ${entrants.length}` })
+                    .setTimestamp();
+
+                await fetchedMsg.edit({ embeds: [endEmbed] });
+                await fetchedMsg.reply(`Congratulations ${winnersMention}! You won **${prize}**!`);
+            } catch (err) {
+                console.log(err);
+                await interaction.channel.send("Giveaway ended but there was an error picking winners.");
+            }
+        }, durationMinutes * 60 * 1000);
+    }
+
+    // ─── existing commands (bilkul same) ───────────────────────────────────────
     if (interaction.commandName === 'ban') {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers))
             return interaction.reply({ content: "No permission", ephemeral: true });
@@ -153,22 +225,15 @@ if (interaction.commandName === "legit") {
     }
 
     if (interaction.commandName === 'giverole') {
-
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageRoles))
             return interaction.reply({ content: "No permission", ephemeral: true });
-
         const count = interaction.options.getInteger('count');
         const role = interaction.options.getRole('role');
-
         await interaction.reply({ content: `Giving role to ${count} members...`, ephemeral: true });
-
         const members = await interaction.guild.members.fetch();
         let given = 0;
-
         for (const member of members.values()) {
-
             if (given >= count) break;
-
             if (!member.user.bot && !member.roles.cache.has(role.id)) {
                 try {
                     await member.roles.add(role);
@@ -176,80 +241,34 @@ if (interaction.commandName === "legit") {
                 } catch (e) {}
             }
         }
-
         await interaction.followUp({
             content: `Role ${role.name} given to ${given} members`,
             ephemeral: true
         });
     }
 
-   if (interaction.commandName === 'tos') {
-    const tosEmbed = new EmbedBuilder()
-        .setColor(0xFF5555)                    // red for strict terms
-        .setTitle("📜 TERMS & SERVICES")
-        .setDescription(
-            "By placing an order, you automatically agree to the following terms:\n\u200B"
-        )
-        .addFields(
-            {
-                name: "1. Full Payment Upfront",
-                value: "100% payment required before processing.",
-                inline: false
-            },
-            {
-                name: "2. No Refunds",
-                value: "All sales are final. No refunds, even if you cancel.",
-                inline: false
-            },
-            {
-                name: "3. Vouch Mandatory",
-                value: "You **must** leave a vouch/rep after delivery.",
-                inline: false
-            },
-            {
-                name: "4. No Vouch = No Warranty",
-                value: "No feedback = no replacement or support.",
-                inline: false
-            },
+    if (interaction.commandName === 'tos') {
+        const tosEmbed = new EmbedBuilder()
+            .setColor(0xFF5555)
+            .setTitle("📜 TERMS & SERVICES")
+            .setDescription("By placing an order, you automatically agree to the following terms:\n\u200B")
+            .addFields(
+                { name: "1. Full Payment Upfront", value: "100% payment required before processing.", inline: false },
+                { name: "2. No Refunds", value: "All sales are final. No refunds, even if you cancel.", inline: false },
+                { name: "3. Vouch Mandatory", value: "You **must** leave a vouch/rep after delivery.", inline: false },
+                { name: "4. No Vouch = No Warranty", value: "No feedback = no replacement or support.", inline: false },
+                { name: "5. Pre-orders Non-Refundable", value: "Pre-orders cannot be cancelled or refunded.", inline: false },
+                { name: "6. Proof Required", value: "Negative claims without valid proof → instant permanent ban.", inline: false },
+                { name: "7. Feedback Required", value: "Mandatory feedback after receiving order.", inline: false },
+                { name: "8. Delivery Time", value: "• Payment confirmation: few minutes\n• Estimated delivery: 24–48 hours", inline: false },
+                { name: "9. Zero Tolerance", value: "Abuse, spam, threats → mute / timeout / ban", inline: false },
+                { name: "10. False Accusations", value: "Fake scam reports without proof → no refund, no delivery, permanent ban", inline: false }
+            )
+            .setFooter({ text: "We reserve the right to refuse service • Last updated: March 2025" })
+            .setTimestamp();
+        await interaction.reply({ embeds: [tosEmbed] });
+    }
 
-            {
-                name: "5. Pre-orders Non-Refundable",
-                value: "Pre-orders cannot be cancelled or refunded.",
-                inline: false
-            },
-            {
-                name: "6. Proof Required",
-                value: "Negative claims without valid proof → instant permanent ban.",
-                inline: false
-            },
-            {
-                name: "7. Feedback Required",
-                value: "Mandatory feedback after receiving order.",
-                inline: false
-            },
-            {
-                name: "8. Delivery Time",
-                value: "• Payment confirmation: few minutes\n• Estimated delivery: 24–48 hours",
-                inline: false
-            },
-            {
-                name: "9. Zero Tolerance",
-                value: "Abuse, spam, threats → mute / timeout / ban",
-                inline: false
-            },
-            {
-                name: "10. False Accusations",
-                value: "Fake scam reports without proof → no refund, no delivery, permanent ban",
-                inline: false
-            }
-        )
-        .setFooter({ 
-            text: "We reserve the right to refuse service • Last updated: March 2025" 
-        })
-        .setTimestamp();
-
-    await interaction.reply({ embeds: [tosEmbed] });
-}
     if (interaction.commandName === 'rules') {
         const rulesEmbed = new EmbedBuilder()
             .setColor(0xED4245)
@@ -262,7 +281,6 @@ if (interaction.commandName === "legit") {
                 "5. **Follow Discord ToS**"
             )
             .setTimestamp();
-
         await interaction.reply({ embeds: [rulesEmbed] });
     }
 });
