@@ -77,7 +77,7 @@ const commands = [
         .setDescription('Start a simple giveaway')
         .addStringOption(o => o.setName('prize').setDescription('Prize to give').setRequired(true))
         .addIntegerOption(o => o.setName('winners').setDescription('Number of winners').setRequired(true).setMinValue(1).setMaxValue(10))
-        .addIntegerOption(o => o.setName('duration').setDescription('Duration in minutes').setRequired(true).setMinValue(1).setMaxValue(1440))
+        .addStringOption(o => o.setName('duration').setDescription('Duration (e.g. 30m, 1h, 2d)').setRequired(true))
 ].map(cmd => cmd.toJSON());
 
 client.once('ready', async () => {
@@ -107,7 +107,7 @@ client.on('interactionCreate', async interaction => {
                 "❌ = Without Proof = Ban"
             )
             .setFooter({
-                text: "Developed by @BAASHAA • 3/10/2026 "
+                text: "Developed by @meko1st • 3/6/2026 12:28 AM"
             })
             .setTimestamp();
 
@@ -117,17 +117,135 @@ client.on('interactionCreate', async interaction => {
             ephemeral: true
         });
     }
+
+    if (interaction.commandName === "giveaway") {
+        if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
+            return interaction.reply({ content: "You need Manage Messages permission!", ephemeral: true });
+        }
+
+        const prize = interaction.options.getString('prize');
+        const winnersCount = interaction.options.getInteger('winners');
+        const durationInput = interaction.options.getString('duration').toLowerCase().trim();
+
+        // Parse duration (30m, 1h, 2d, etc.)
+        let durationMs = 0;
+        const match = durationInput.match(/^(\d+)([mhd])$/);
+        if (!match) {
+            return interaction.reply({ content: "Invalid duration! Use format like: 30m, 1h, 2d", ephemeral: true });
+        }
+
+        const value = parseInt(match[1]);
+        const unit = match[2];
+
+        if (unit === 'm') durationMs = value * 60 * 1000;               // minutes
+        else if (unit === 'h') durationMs = value * 60 * 60 * 1000;     // hours
+        else if (unit === 'd') durationMs = value * 24 * 60 * 60 * 1000; // days
+
+        if (durationMs < 60000 || durationMs > 7 * 24 * 60 * 60 * 1000) {
+            return interaction.reply({ content: "Duration must be between 1 minute and 7 days!", ephemeral: true });
+        }
+
+        const endTime = Date.now() + durationMs;
+        const host = interaction.user;
+
+        const giveawayEmbed = new EmbedBuilder()
+            .setColor("#FFD700")
+            .setTitle("🎉 GIVEAWAY STARTED! 🎉")
+            .setDescription(
+                `**Prize:** ${prize}\n` +
+                `**Winners:** ${winnersCount}\n\n` +
+                "React with 🎉 to enter!\n" +
+                `Ends: <t:${Math.floor(endTime / 1000)}:R> (<t:${Math.floor(endTime / 1000)}:f>)\n\n` +
+                `Hosted by: ${host}`
+            )
+            .addFields(
+                { name: "Entries", value: "0", inline: true }
+            )
+            .setFooter({ text: `Giveaway ID: ${interaction.id} • TEC TRADERS` })
+            .setTimestamp();
+
+        const msg = await interaction.channel.send({
+            embeds: [giveawayEmbed],
+            content: "@everyone Giveaway started! Join now 🎉"
+        });
+        await msg.react('🎉');
+
+        await interaction.reply({
+            content: `Giveaway started! Ends <t:${Math.floor(endTime / 1000)}:R>`,
+            ephemeral: true
+        });
+
+        // Live entries update every 5 seconds (safe)
+        const updateInterval = setInterval(async () => {
+            try {
+                const fetchedMsg = await interaction.channel.messages.fetch(msg.id);
+                const reaction = fetchedMsg.reactions.cache.get('🎉');
+                if (!reaction) return;
+
+                const count = reaction.count - 1;
+                const updatedEmbed = EmbedBuilder.from(fetchedMsg.embeds[0])
+                    .spliceFields(0, 1, { name: "Entries", value: count.toString(), inline: true });
+
+                await fetchedMsg.edit({ embeds: [updatedEmbed] });
+            } catch (err) {
+                clearInterval(updateInterval);
+            }
+        }, 5000);
+
+        // End giveaway
+        setTimeout(async () => {
+            clearInterval(updateInterval);
+            try {
+                const fetchedMsg = await interaction.channel.messages.fetch(msg.id);
+                const reaction = fetchedMsg.reactions.cache.get('🎉');
+                if (!reaction) return;
+
+                const users = await reaction.users.fetch();
+                const entrants = users.filter(u => !u.bot).map(u => u.id);
+
+                if (entrants.length === 0) {
+                    const endEmbed = new EmbedBuilder()
+                        .setColor("#FF0000")
+                        .setTitle("Giveaway Ended")
+                        .setDescription("No one entered 😢")
+                        .setTimestamp();
+                    return fetchedMsg.edit({ embeds: [endEmbed], content: null });
+                }
+
+                const shuffled = entrants.sort(() => 0.5 - Math.random());
+                const winners = shuffled.slice(0, winnersCount);
+                const winnersMention = winners.map(id => `<@${id}>`).join(", ");
+
+                const endEmbed = new EmbedBuilder()
+                    .setColor("#00FF00")
+                    .setTitle("🎉 Giveaway Ended!")
+                    .setDescription(
+                        `**Prize:** ${prize}\n` +
+                        `**Winners:** ${winnersMention}\n\n` +
+                        "Congratulations! Contact the host to claim your prize."
+                    )
+                    .setFooter({ text: `Total entries: ${entrants.length}` })
+                    .setTimestamp();
+
+                await fetchedMsg.edit({ embeds: [endEmbed] });
+                await fetchedMsg.reply(`Congratulations ${winnersMention}! You won **${prize}**!`);
+            } catch (err) {
+                console.log(err);
+                await interaction.channel.send("Giveaway ended but there was an error picking winners.");
+            }
+        }, durationMs);
+    }
+
     // Other commands (ban, giverole, tos, rules etc.) remain unchanged
-    // Paste your existing code for them here if needed
 });
 
-// ─── WELCOME MESSAGE (Dark Store Style) ─────────────────────────────
+// ─── WELCOME MESSAGE ─────────────────────────────
 client.on('guildMemberAdd', async member => {
     const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
     if (!channel) return;
 
     const welcomeEmbed = new EmbedBuilder()
-        .setColor(0x8B00FF) // Neon purple
+        .setColor(0x8B00FF)
         .setTitle("Tec Trader")
         .setDescription(
             `Hey <@${member.id}>, welcome to **Tec Trader**!\n\n` +
@@ -135,7 +253,7 @@ client.on('guildMemberAdd', async member => {
             `GAMES AND SOFTWARES.`
         )
         .setThumbnail(client.user.displayAvatarURL({ forceStatic: true }))
-        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&") // Replace if needed
+        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")
         .setAuthor({
             name: "Tec Trader",
             iconURL: client.user.displayAvatarURL({ forceStatic: true })
@@ -151,13 +269,13 @@ client.on('guildMemberAdd', async member => {
     });
 });
 
-// ─── GOODBYE MESSAGE (Dark Vibe) ─────────────────────────────
+// ─── GOODBYE MESSAGE ─────────────────────────────
 client.on('guildMemberRemove', async member => {
     const channel = member.guild.channels.cache.get(GOODBYE_CHANNEL_ID);
     if (!channel) return;
 
     const goodbyeEmbed = new EmbedBuilder()
-        .setColor(0x4B0082) // Dark purple
+        .setColor(0x4B0082)
         .setTitle("Tec Trader")
         .setDescription(
             `**${member.user.tag}** has left the shadows...\n\n` +
@@ -165,7 +283,7 @@ client.on('guildMemberRemove', async member => {
             `Come back anytime...`
         )
         .setThumbnail(member.user.displayAvatarURL({ forceStatic: true }))
-        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&") // Replace if needed
+        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")
         .setAuthor({
             name: "Tec Trader",
             iconURL: client.user.displayAvatarURL({ forceStatic: true })
