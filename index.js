@@ -103,7 +103,7 @@ client.on('interactionCreate', async interaction => {
             .setColor("#8A2BE2") // TEC TRADERS purple
             .setAuthor({
                 name: "TEC TRADERS",
-                iconURL: "https://cdn.discordapp.com/attachments/1337788828051701873/1475668721010741248/tec_trader-removebg-preview_1.png?ex=69b0c817&is=69af7697&hm=1519e14662ee4c0b5fbfc27be3942cf4f5b2d79c22d180261855dd913d2e7941&", // apna logo daal lena
+                iconURL: "https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&", // apna logo daal lena
             })
             .setTitle("🔍 LEGIT CHECK - Are We Legit?")
             .setDescription(
@@ -112,7 +112,7 @@ client.on('interactionCreate', async interaction => {
                 "❌ **= Without Solid Proof = Ban / Blacklist**\n\n" +
                 "Proof ke saath hi claim karo (pic direct link + store name). Fake report = permanent ban."
             )
-            .setThumbnail("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")
+            .setThumbnail("https://cdn.discordapp.com/attachments/1337788828051701873/1475668721010741248/tec_trader-removebg-preview_1.png?ex=69b0c817&is=69af7697&hm=1519e14662ee4c0b5fbfc27be3942cf4f5b2d79c22d180261855dd913d2e7941&")
             .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1475668721010741248/tec_trader-removebg-preview_1.png?ex=69b01f57&is=69aecdd7&hm=f30307c268b24c2c5b79cfd9d2d874fd5f8b6e53e2acb1ccde1f45b1a72b9341&")
             .setFooter({
                 text: "TEC TRADERS • Trusted Services • Developed by @meko1st"
