@@ -69,11 +69,9 @@ const commands = [
         .setDescription('Give role to X members')
         .addIntegerOption(o => o.setName('count').setDescription('Number of members').setRequired(true))
         .addRoleOption(o => o.setName('role').setDescription('Role to give').setRequired(true)),
-    // 🔥 UPDATED LEGIT CHECK COMMAND
     new SlashCommandBuilder()
         .setName('legit')
         .setDescription('Send Legit Check Embed'),
-    // 🔥 NEW GIVEAWAY COMMAND
     new SlashCommandBuilder()
         .setName('giveaway')
         .setDescription('Start a simple giveaway')
@@ -99,68 +97,95 @@ client.once('ready', async () => {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
-    // ─── UPDATED LEGIT EMBED COMMAND ─────────────────────────────
+    // ─── LEGIT EMBED COMMAND (MINIMAL & CLEAN) ─────────────────────────────
     if (interaction.commandName === "legit") {
         const embed = new EmbedBuilder()
-            .setColor("#00FF00")                    // green for legit vibe
-            .setTitle("Detail Service - Embed")
-            .setDescription(
-                "**Are we Legit?**\n\n" +
-                "✅ = Yes\n" +
-                "❌ = Without Proof = Ban"
-            )
-            .addFields(
-                {
-                    name: "Proof Upload Karo",
-                    value: "Pic ka **direct link** daal do (imgur/discord/etc)\nStore name bhi likh do\nBaki sab same rakhna",
-                    inline: false
-                }
-            )
-            .setFooter({ 
-                text: "Developed by @meko1st • 3/6/2026 12:28 AM" 
+            .setColor("#8A2BE2") // TEC TRADERS purple
+            .setAuthor({
+                name: "TEC TRADERS",
+                iconURL: "https://cdn.discordapp.com/attachments/1337788828051701873/1475668721010741248/tec_trader-removebg-preview_1.png?ex=69b0c817&is=69af7697&hm=1519e14662ee4c0b5fbfc27be3942cf4f5b2d79c22d180261855dd913d2e7941&", // apna logo daal lena
             })
-            .setTimestamp(new Date('2026-03-06T12:28:00.000Z'));
+            .setTitle("🔍 LEGIT CHECK - Are We Legit?")
+            .setDescription(
+                "**TEC TRADERS Service Verification**\n\n" +
+                "✅ **= Yes, 100% Legit**\n" +
+                "❌ **= Without Solid Proof = Ban / Blacklist**\n\n" +
+                "Proof ke saath hi claim karo (pic direct link + store name). Fake report = permanent ban."
+            )
+            .setThumbnail("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")
+            .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1475668721010741248/tec_trader-removebg-preview_1.png?ex=69b01f57&is=69aecdd7&hm=f30307c268b24c2c5b79cfd9d2d874fd5f8b6e53e2acb1ccde1f45b1a72b9341&")
+            .setFooter({
+                text: "TEC TRADERS • Trusted Services • Developed by @meko1st"
+            })
+            .setTimestamp();
 
         await interaction.channel.send({ embeds: [embed] });
         await interaction.reply({
-            content: "✅ Legit embed sent successfully",
+            content: "✅ TEC TRADERS Legit Check embed bhej diya gaya!",
             ephemeral: true
         });
     }
 
-    // ─── NEW GIVEAWAY COMMAND ────────────────────────────────
+      // ─── IMPROVED GIVEAWAY COMMAND (1 second live update) ────────────────────────────────
     if (interaction.commandName === "giveaway") {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-            return interaction.reply({ content: "You need Manage Messages permission to start giveaways!", ephemeral: true });
+            return interaction.reply({ content: "Manage Messages permission chahiye giveaway start karne ke liye!", ephemeral: true });
         }
 
         const prize = interaction.options.getString('prize');
         const winnersCount = interaction.options.getInteger('winners');
         const durationMinutes = interaction.options.getInteger('duration');
         const endTime = Date.now() + durationMinutes * 60 * 1000;
+        const host = interaction.user;
 
         const giveawayEmbed = new EmbedBuilder()
-            .setColor("#FFD700") // gold/yellow vibe
-            .setTitle("🎉 GIVEAWAY STARTED!")
+            .setColor("#FFD700")
+            .setTitle("🎉 GIVEAWAY STARTED! 🎉")
             .setDescription(
                 `**Prize:** ${prize}\n` +
                 `**Winners:** ${winnersCount}\n\n` +
-                "React with 🎉 to enter!\n" +
-                `Ends: <t:${Math.floor(endTime / 1000)}:R> (<t:${Math.floor(endTime / 1000)}:f>)`
+                "React karo 🎉 enter karne ke liye!\n" +
+                `Ends: <t:${Math.floor(endTime / 1000)}:R> (<t:${Math.floor(endTime / 1000)}:f>)\n\n` +
+                `Hosted by: ${host}`
             )
-            .setFooter({ text: `Hosted by ${interaction.user.tag} • ID: ${interaction.id}` })
+            .addFields(
+                { name: "Entries", value: "0 abhi tak", inline: true }
+            )
+            .setFooter({ text: `Giveaway ID: ${interaction.id} • TEC TRADERS` })
             .setTimestamp();
 
-        const msg = await interaction.channel.send({ embeds: [giveawayEmbed] });
+        const msg = await interaction.channel.send({ 
+            embeds: [giveawayEmbed],
+            content: "@everyone Giveaway shuru! Jaldi participate karo 🎉"
+        });
         await msg.react('🎉');
 
         await interaction.reply({
-            content: `Giveaway started! Ends <t:${Math.floor(endTime / 1000)}:R>`,
+            content: `Giveaway shuru ho gaya! Ends <t:${Math.floor(endTime / 1000)}:R>\nHosted by ${host}`,
             ephemeral: true
         });
 
-        // Giveaway end logic (simple setTimeout)
+        // Live entries update - har 1 second (1000ms)
+        const updateInterval = setInterval(async () => {
+            try {
+                const fetchedMsg = await interaction.channel.messages.fetch(msg.id);
+                const reaction = fetchedMsg.reactions.cache.get('🎉');
+                if (!reaction) return;
+
+                const count = reaction.count - 1; // bot ka react minus kar rahe hain
+                const updatedEmbed = EmbedBuilder.from(fetchedMsg.embeds[0])
+                    .spliceFields(0, 1, { name: "Entries", value: `${count} abhi tak`, inline: true });
+
+                await fetchedMsg.edit({ embeds: [updatedEmbed] });
+            } catch (err) {
+                // agar error aaye (rate limit ya message delete) to interval stop
+                clearInterval(updateInterval);
+            }
+        }, 1000);  // ← yahan 1000ms = 1 second
+
+        // Giveaway end logic
         setTimeout(async () => {
+            clearInterval(updateInterval);
             try {
                 const fetchedMsg = await interaction.channel.messages.fetch(msg.id);
                 const reaction = fetchedMsg.reactions.cache.get('🎉');
@@ -172,39 +197,40 @@ client.on('interactionCreate', async interaction => {
                 if (entrants.length === 0) {
                     const endEmbed = new EmbedBuilder()
                         .setColor("#FF0000")
-                        .setTitle("Giveaway Ended")
-                        .setDescription("No one entered 😢")
+                        .setTitle("Giveaway Khatam")
+                        .setDescription("Koi participate nahi kiya 😢")
                         .setTimestamp();
-                    return fetchedMsg.edit({ embeds: [endEmbed] });
+                    return fetchedMsg.edit({ embeds: [endEmbed], content: null });
                 }
 
-                // Random winners
                 const shuffled = entrants.sort(() => 0.5 - Math.random());
                 const winners = shuffled.slice(0, winnersCount);
-
                 const winnersMention = winners.map(id => `<@${id}>`).join(", ");
 
                 const endEmbed = new EmbedBuilder()
                     .setColor("#00FF00")
-                    .setTitle("🎉 Giveaway Ended!")
+                    .setTitle("🎉 Giveaway Khatam - Winners!")
                     .setDescription(
-                        `**Prize:** ${prize}\n` +
-                        `**Winners:** ${winnersMention}\n\n` +
-                        "Congratulations! Contact the host to claim your prize."
+                        `**Prize:** ${prize}\n\n` +
+                        `Winners: ${winnersMention}\n\n` +
+                        `Host <@${host.id}> se prize claim karo!`
                     )
-                    .setFooter({ text: `Total entries: ${entrants.length}` })
+                    .setFooter({ text: `TEC TRADERS • Hosted by ${host.tag}` })
                     .setTimestamp();
 
-                await fetchedMsg.edit({ embeds: [endEmbed] });
-                await fetchedMsg.reply(`Congratulations ${winnersMention}! You won **${prize}**!`);
+                await fetchedMsg.edit({ 
+                    embeds: [endEmbed], 
+                    content: winnersMention  // sirf winners tag
+                });
+
             } catch (err) {
                 console.log(err);
-                await interaction.channel.send("Giveaway ended but there was an error picking winners.");
+                await interaction.channel.send("Giveaway end hua lekin error aaya.");
             }
         }, durationMinutes * 60 * 1000);
     }
 
-    // ─── existing commands (bilkul same) ───────────────────────────────────────
+    // ─── existing commands (same as before) ───────────────────────────────────────
     if (interaction.commandName === 'ban') {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers))
             return interaction.reply({ content: "No permission", ephemeral: true });
