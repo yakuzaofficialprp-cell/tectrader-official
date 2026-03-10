@@ -249,18 +249,19 @@ client.on('guildMemberAdd', async member => {
     const totalMembers = member.guild.memberCount;
 
     const welcomeEmbed = new EmbedBuilder()
-        .setColor("#00FF00") // Green for welcome vibe (ya #5865F2 Discord blue bhi kar sakte ho)
-        .setTitle("Welcome to Elite Services")
+        .setColor("#8B0000") // red for welcome vibe (ya #5865F2 Discord blue bhi kar sakte ho)
+        .setTitle("Welcome to Tec Trader")
         .setDescription(
             `Welcome <@${member.id}> to **Tec Trader**!\n\n` +
             `Make sure you have read the rules in <#1337263610321305650>\n` +
-            `and our TOS in <#TOS_CHANNEL_ID>`
+            `<#1337266092812406844>`
+            `<#1403799364706767019>`
         )
         .addFields(
             { name: "Total Members", value: `${totalMembers}`, inline: true }
         )
         .setThumbnail(member.user.displayAvatarURL({ forceStatic: true }))
-        .setFooter({ text: "Elite Services • Enjoy your stay!" })
+        .setFooter({ text: "Tec Trader • Enjoy your stay!" })
         .setTimestamp();
 
     await channel.send({
