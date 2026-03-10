@@ -240,16 +240,18 @@ client.on('interactionCreate', async interaction => {
 });
 
 // ─── WELCOME MESSAGE ─────────────────────────────
+// ─── WELCOME MESSAGE (Dark Store Style) ─────────────────────────────
 client.on('guildMemberAdd', async member => {
     const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
     if (!channel) return;
 
     const welcomeEmbed = new EmbedBuilder()
-        .setColor(0x8B00FF)
+        .setColor(0x8B00FF) // Neon purple
         .setTitle("Tec Trader")
         .setDescription(
             `Hey <@${member.id}>, welcome to **Tec Trader**!\n\n` +
-            
+            `YOU WILL FIND CONTENT RELATED TO ALL\n` +
+            `GAMES AND SOFTWARES.`
         )
         .setThumbnail(client.user.displayAvatarURL({ forceStatic: true }))
         .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")
