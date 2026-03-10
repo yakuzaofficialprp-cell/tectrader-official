@@ -135,7 +135,7 @@ client.on('guildMemberAdd', async member => {
         
         )
         .setThumbnail(client.user.displayAvatarURL({ forceStatic: true }))
-        .setImage("https://cdn.discordapp.com/attachments/YOUR_CHANNEL_ID/YOUR_MESSAGE_ID/dark-store-welcome.png")  // Replace with your Discord CDN link
+        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")  // Replace with your Discord CDN link
         .setAuthor({
             name: "Tec Trader",
             iconURL: client.user.displayAvatarURL({ forceStatic: true })
@@ -165,7 +165,7 @@ client.on('guildMemberRemove', async member => {
             `Come back anytime...`
         )
         .setThumbnail(member.user.displayAvatarURL({ forceStatic: true }))
-        .setImage("https://cdn.discordapp.com/attachments/YOUR_CHANNEL_ID/YOUR_MESSAGE_ID/dark-goodbye.png")  // Replace with your Discord CDN link
+        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")  // Replace with your Discord CDN link
         .setAuthor({
             name: "Tec Trader",
             iconURL: client.user.displayAvatarURL({ forceStatic: true })
