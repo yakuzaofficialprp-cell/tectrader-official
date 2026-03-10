@@ -107,7 +107,7 @@ client.on('interactionCreate', async interaction => {
                 "❌ = Without Proof = Ban"
             )
             .setFooter({
-                text: "Developed by @meko1st • 3/6/2026 12:28 AM"
+                text: "Developed by @BAASHAA • 3/10/2026 "
             })
             .setTimestamp();
 
