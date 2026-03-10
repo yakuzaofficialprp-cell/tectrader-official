@@ -107,7 +107,7 @@ client.on('interactionCreate', async interaction => {
                 "❌ = Without Proof = Ban"
             )
             .setFooter({
-                text: "Developed by @meko1st • 3/6/2026 12:28 AM"
+                text: "Developed by @BAASHAA • 3/10/2026 "
             })
             .setTimestamp();
 
@@ -117,7 +117,6 @@ client.on('interactionCreate', async interaction => {
             ephemeral: true
         });
     }
-
     // Other commands (ban, giverole, tos, rules etc.) remain unchanged
     // Paste your existing code for them here if needed
 });
@@ -128,14 +127,15 @@ client.on('guildMemberAdd', async member => {
     if (!channel) return;
 
     const welcomeEmbed = new EmbedBuilder()
-        .setColor(0x8B00FF)  // Neon purple
+        .setColor(0x8B00FF) // Neon purple
         .setTitle("Tec Trader")
         .setDescription(
             `Hey <@${member.id}>, welcome to **Tec Trader**!\n\n` +
-        
+            `YOU WILL FIND CONTENT RELATED TO ALL\n` +
+            `GAMES AND SOFTWARES.`
         )
         .setThumbnail(client.user.displayAvatarURL({ forceStatic: true }))
-        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")  // Replace with your Discord CDN link
+        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&") // Replace if needed
         .setAuthor({
             name: "Tec Trader",
             iconURL: client.user.displayAvatarURL({ forceStatic: true })
@@ -157,21 +157,21 @@ client.on('guildMemberRemove', async member => {
     if (!channel) return;
 
     const goodbyeEmbed = new EmbedBuilder()
-        .setColor(0x4B0082)  // Dark purple
-        .setTitle("Tec Trder")
+        .setColor(0x4B0082) // Dark purple
+        .setTitle("Tec Trader")
         .setDescription(
             `**${member.user.tag}** has left the shadows...\n\n` +
             `The darkness will miss you.\n` +
             `Come back anytime...`
         )
         .setThumbnail(member.user.displayAvatarURL({ forceStatic: true }))
-        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")  // Replace with your Discord CDN link
+        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&") // Replace if needed
         .setAuthor({
             name: "Tec Trader",
             iconURL: client.user.displayAvatarURL({ forceStatic: true })
         })
         .setFooter({
-            text: "DARK STORE • The Void Awaits"
+            text: "Tec Trader • The Void Awaits"
         })
         .setTimestamp();
 
