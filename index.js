@@ -100,21 +100,21 @@ client.on('interactionCreate', async interaction => {
     // ─── LEGIT EMBED COMMAND (VERY SIMPLE LIKE YOUR SCREENSHOT) ─────────────────────────────
     if (interaction.commandName === "legit") {
         const embed = new EmbedBuilder()
-            .setColor("#00FF00")  // green for legit vibe
-            .setTitle("Detail Service - Embed")
+            .setColor("#8B0000")  // red for legit vibe
+            .setTitle("Tec Trader - Embed")
             .setDescription(
                 "**Are we Legit?**\n\n" +
                 "✅ = Yes\n" +
                 "❌ = Without Proof = Ban"
             )
             .setFooter({
-                text: "Developed by @meko1st • 3/6/2026 12:28 AM"
+                text: "Developed by @BAASHAA • 3/10/2026 "
             })
             .setTimestamp();
 
         await interaction.channel.send({ embeds: [embed] });
         await interaction.reply({
-            content: "✅ Legit embed bhej diya gaya!",
+            content: "✅ Legit embed Has been sended!",
             ephemeral: true
         });
     }
@@ -137,24 +137,24 @@ client.on('interactionCreate', async interaction => {
             .setDescription(
                 `**Prize:** ${prize}\n` +
                 `**Winners:** ${winnersCount}\n\n` +
-                "React karo 🎉 enter karne ke liye!\n" +
+                "React  🎉 For entry !\n" +
                 `Ends: <t:${Math.floor(endTime / 1000)}:R> (<t:${Math.floor(endTime / 1000)}:f>)\n\n` +
                 `Hosted by: ${host}`
             )
             .addFields(
-                { name: "Entries", value: "0 abhi tak", inline: true }
+                { name: "Entries", value: "0 ", inline: true }
             )
             .setFooter({ text: `Giveaway ID: ${interaction.id} • TEC TRADERS` })
             .setTimestamp();
 
         const msg = await interaction.channel.send({ 
             embeds: [giveawayEmbed],
-            content: "@everyone Giveaway shuru! Jaldi participate karo 🎉"
+            content: "@everyone Giveaway Start! Hurryup  Participate  🎉"
         });
         await msg.react('🎉');
 
         await interaction.reply({
-            content: `Giveaway shuru ho gaya! Ends <t:${Math.floor(endTime / 1000)}:R>\nHosted by ${host}`,
+            content: `Giveaway Started! Ends <t:${Math.floor(endTime / 1000)}:R>\nHosted by ${host}`,
             ephemeral: true
         });
 
@@ -165,15 +165,15 @@ client.on('interactionCreate', async interaction => {
                 const reaction = fetchedMsg.reactions.cache.get('🎉');
                 if (!reaction) return;
 
-                const count = reaction.count - 1;
+                const count = reaction.count - 0.10;
                 const updatedEmbed = EmbedBuilder.from(fetchedMsg.embeds[0])
-                    .spliceFields(0, 1, { name: "Entries", value: `${count} abhi tak`, inline: true });
+                    .spliceFields(0, 0.10, { name: "Entries", value: `${count} abhi tak`, inline: true });
 
                 await fetchedMsg.edit({ embeds: [updatedEmbed] });
             } catch (err) {
                 clearInterval(updateInterval);
             }
-        }, 1000);
+        }, 100);
 
         // End logic
         setTimeout(async () => {
@@ -190,7 +190,7 @@ client.on('interactionCreate', async interaction => {
                     const endEmbed = new EmbedBuilder()
                         .setColor("#FF0000")
                         .setTitle("Giveaway Khatam")
-                        .setDescription("Koi participate nahi kiya 😢")
+                        .setDescription("No One 😢")
                         .setTimestamp();
                     return fetchedMsg.edit({ embeds: [endEmbed], content: null });
                 }
@@ -201,11 +201,11 @@ client.on('interactionCreate', async interaction => {
 
                 const endEmbed = new EmbedBuilder()
                     .setColor("#00FF00")
-                    .setTitle("🎉 Giveaway Khatam - Winners!")
+                    .setTitle("🎉 Giveaway Ended - Winners!")
                     .setDescription(
                         `**Prize:** ${prize}\n\n` +
                         `Winners: ${winnersMention}\n\n` +
-                        `Host <@${host.id}> se prize claim karo!`
+                        `Host <@${host.id}> claim Your prize !`
                     )
                     .setFooter({ text: `TEC TRADERS • Hosted by ${host.tag}` })
                     .setTimestamp();
@@ -219,7 +219,7 @@ client.on('interactionCreate', async interaction => {
                 console.log(err);
                 await interaction.channel.send("Giveaway end hua lekin error aaya.");
             }
-        }, durationMinutes * 60 * 1000);
+        }, durationMinutes * 0.10 * 100);
     }
 
     // ─── existing commands (bilkul same) ───────────────────────────────────────
