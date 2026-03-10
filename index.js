@@ -97,36 +97,29 @@ client.once('ready', async () => {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isChatInputCommand()) return;
 
-    // ─── LEGIT EMBED COMMAND (MINIMAL & CLEAN) ─────────────────────────────
-   if (interaction.commandName === "legit") {
-    const embed = new EmbedBuilder()
-        .setColor("#8A2BE2")
-        .setAuthor({
-            name: "TEC TRADERS",
-            iconURL: client.user.displayAvatarURL({ forceStatic: true })  // ← safe & always works
-        })
-        .setTitle("🔍 LEGIT CHECK - Are We Legit?")
-        .setDescription(
-            "**TEC TRADERS Service Verification**\n\n" +
-            "✅ **= Yes, 100% Legit**\n" +
-            "❌ **= Without Solid Proof = Ban / Blacklist**\n\n" +
-            "Proof ke saath hi claim karo (pic direct link + store name). Fake report = permanent ban."
-        )
-        .setThumbnail("https://cdn.discordapp.com/attachments/1337788828051701873/1480098172075376743/standard_1.gif?ex=69b06a97&is=69af1917&hm=3893d590b6f33d4d6baf945e5674c7b47e4803eefed8b70db4cf51a95f3b7907&")
-        .setImage("https://cdn.discordapp.com/attachments/1337788828051701873/1475668721010741248/tec_trader-removebg-preview_1.png?ex=69b01f57&is=69aecdd7&hm=f30307c268b24c2c5b79cfd9d2d874fd5f8b6e53e2acb1ccde1f45b1a72b9341&")
-        .setFooter({
-            text: "TEC TRADERS • Trusted Services • Developed by @meko1st"
-        })
-        .setTimestamp();
+    // ─── LEGIT EMBED COMMAND (VERY SIMPLE LIKE YOUR SCREENSHOT) ─────────────────────────────
+    if (interaction.commandName === "legit") {
+        const embed = new EmbedBuilder()
+            .setColor("#00FF00")  // green for legit vibe
+            .setTitle("Detail Service - Embed")
+            .setDescription(
+                "**Are we Legit?**\n\n" +
+                "✅ = Yes\n" +
+                "❌ = Without Proof = Ban"
+            )
+            .setFooter({
+                text: "Developed by @meko1st • 3/6/2026 12:28 AM"
+            })
+            .setTimestamp();
 
-    await interaction.channel.send({ embeds: [embed] });
-    await interaction.reply({
-        content: "✅ TEC TRADERS Legit Check embed bhej diya gaya!",
-        ephemeral: true
-    });
-}
+        await interaction.channel.send({ embeds: [embed] });
+        await interaction.reply({
+            content: "✅ Legit embed bhej diya gaya!",
+            ephemeral: true
+        });
+    }
 
-      // ─── IMPROVED GIVEAWAY COMMAND (1 second live update) ────────────────────────────────
+    // ─── IMPROVED GIVEAWAY COMMAND (1 second live update) ────────────────────────────────
     if (interaction.commandName === "giveaway") {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return interaction.reply({ content: "Manage Messages permission chahiye giveaway start karne ke liye!", ephemeral: true });
@@ -165,25 +158,24 @@ client.on('interactionCreate', async interaction => {
             ephemeral: true
         });
 
-        // Live entries update - har 1 second (1000ms)
+        // Live entries update - har 1 second
         const updateInterval = setInterval(async () => {
             try {
                 const fetchedMsg = await interaction.channel.messages.fetch(msg.id);
                 const reaction = fetchedMsg.reactions.cache.get('🎉');
                 if (!reaction) return;
 
-                const count = reaction.count - 1; // bot ka react minus kar rahe hain
+                const count = reaction.count - 1;
                 const updatedEmbed = EmbedBuilder.from(fetchedMsg.embeds[0])
                     .spliceFields(0, 1, { name: "Entries", value: `${count} abhi tak`, inline: true });
 
                 await fetchedMsg.edit({ embeds: [updatedEmbed] });
             } catch (err) {
-                // agar error aaye (rate limit ya message delete) to interval stop
                 clearInterval(updateInterval);
             }
-        }, 1000);  // ← yahan 1000ms = 1 second
+        }, 1000);
 
-        // Giveaway end logic
+        // End logic
         setTimeout(async () => {
             clearInterval(updateInterval);
             try {
@@ -220,7 +212,7 @@ client.on('interactionCreate', async interaction => {
 
                 await fetchedMsg.edit({ 
                     embeds: [endEmbed], 
-                    content: winnersMention  // sirf winners tag
+                    content: winnersMention
                 });
 
             } catch (err) {
@@ -230,7 +222,7 @@ client.on('interactionCreate', async interaction => {
         }, durationMinutes * 60 * 1000);
     }
 
-    // ─── existing commands (same as before) ───────────────────────────────────────
+    // ─── existing commands (bilkul same) ───────────────────────────────────────
     if (interaction.commandName === 'ban') {
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers))
             return interaction.reply({ content: "No permission", ephemeral: true });
