@@ -249,7 +249,7 @@ client.on('guildMemberAdd', async member => {
         .setColor("#8B0000") // red for fresh welcome vibe (ya purple chahiye to 0x8B00FF kar dena)
         .setTitle("Welcome to Tec Trader")
         .setDescription(
-            `Welcome <@${member.id}> to **Elite Services**!\n\n` +
+            `Welcome <@${member.id}> to **Tec Trader**!\n\n` +
             `• Read the rules & TOS: <#1337263610321305650>\n` +
             `• Need support? Create a ticket: <#1337266092812406844>\n` +
             `• Leave your vouch / feedback here: <#1403799364706767019>`
